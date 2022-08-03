@@ -1,5 +1,7 @@
-package br.com.myproject.exceptions
+package br.com.myproject.exceptions.handler
 
+import br.com.myproject.exceptions.ExceptionResponse
+import br.com.myproject.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -7,9 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import java.lang.*
 import java.util.*
-import kotlin.Exception
 
 @ControllerAdvice
 @RestController
@@ -17,7 +17,7 @@ class CustomizedResponseEntityException : ResponseEntityExceptionHandler(){
 
     @ExceptionHandler(Exception::class)
     fun handleAllExceptions(ex: Exception, request: WebRequest) :
-            ResponseEntity<ExceptionResponse>{
+            ResponseEntity<ExceptionResponse> {
         val exceptionResponse = ExceptionResponse(
             Date(),
             ex.message,
@@ -26,14 +26,14 @@ class CustomizedResponseEntityException : ResponseEntityExceptionHandler(){
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @ExceptionHandler(UnsupportedMathOperationException::class)
-    fun handleBadRequestExceptions(ex: Exception, request: WebRequest) :
-            ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(ResourceNotFoundException::class)
+    fun handleResourceNotFoundExceptions(ex: Exception, request: WebRequest) :
+            ResponseEntity<ExceptionResponse> {
         val exceptionResponse = ExceptionResponse(
             Date(),
             ex.message,
             request.getDescription(false)
         )
-        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.BAD_REQUEST)
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
     }
 }
